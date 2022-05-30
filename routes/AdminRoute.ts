@@ -2,11 +2,7 @@ import express, { request, response, NextFunction, Router } from 'express';
 const router = express.Router();
 import { AdminService } from './../services/AdminService'
 //create an instance of AdminController
-
 const adminService = new AdminService();
-
-
-
 
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
@@ -16,8 +12,11 @@ const createVendor = async function (request:any,response:any) {
         const APIresponse = await adminService.createVendor(request, response);
         response.json(APIresponse);
 
-    } catch (error) {
-        throw error;
+    } catch (error:any) {
+        response.json({
+            success:false,
+            error:error.message
+        })
 
     }
 
