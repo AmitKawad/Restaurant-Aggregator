@@ -4,12 +4,16 @@ import { AdminService } from './../services/AdminService'
 //create an instance of AdminController
 
 const adminService = new AdminService();
+
+
+
+
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
 })
-const createVendor = async function () {
+const createVendor = async function (request:any,response:any) {
     try {
-        const APIresponse = adminService.createVendor(request, response);
+        const APIresponse = await adminService.createVendor(request, response);
         response.json(APIresponse);
 
     } catch (error) {
@@ -44,5 +48,6 @@ const getVendorByid = async function(){
 
 router.post('/vendor', createVendor);
 router.get('/vendor', getVendor);
+router.get('/vendor:id', getVendorByid);
 
 module.exports = router
