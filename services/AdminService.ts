@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 import { vendor } from '../models';
 export class AdminService {
 
-    static findVendor = async function (name: string | undefined, email?: string):Promise<string>  {
+    findVendor = async function (name: string | undefined, email?: string):Promise<string>  {
         if(email){
             return await vendor.findOne({ email: email})
         }else{
@@ -12,7 +12,7 @@ export class AdminService {
         }
 
     }
-    createVendor = async function (request: any, response: any) {
+    createVendor = async function (this: AdminService , request: any, response: any) {
         try {
             const inputParams: vendorInterface = request.body
             const { name, ownerName, foodType, pincode, address, phone, email, password } = inputParams;
@@ -26,7 +26,7 @@ export class AdminService {
                 email: email,
                 password: password
             })
-            const checkExisting:string = await AdminService.findVendor(undefined, email);
+            const checkExisting:string = await this.findVendor(undefined, email);
             if(checkExisting){
                 throw new Error("Vendor already exists");
             }

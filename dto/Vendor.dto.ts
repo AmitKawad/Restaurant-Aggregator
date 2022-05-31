@@ -9,3 +9,11 @@ export interface vendorInterface {
     password:string
 
 }
+
+export interface VendorPayload {
+
+    _id: string;
+    email: string;
+    name: string;
+
+}
