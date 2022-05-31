@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import config from 'config';
-const dbURI = 'mongodb://localhost:27017/post-project'
 
 const connect = async function (): Promise<void>  {
     try {
