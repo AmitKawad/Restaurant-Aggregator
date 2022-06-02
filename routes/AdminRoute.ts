@@ -7,46 +7,47 @@ const adminService = new AdminService();
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
 })
-const createVendor = async function (request:any,response:any) {
+const createVendor = async function (request: any, response: any) {
     try {
         const APIresponse = await adminService.createVendor(request, response);
         response.json(APIresponse);
 
-    } catch (error:any) {
+    } catch (error: any) {
         response.json({
-            success:false,
-            error:error.message
+            success: false,
+            error: error.message
         })
 
     }
 
 }
-const getVendor = async function () {
+const getVendors = async function (request: any, response: any) {
     try {
-        const APIresponse = adminService.getVendor(request, response);
+        console.log('Inside getVendor');
+        const APIresponse = await adminService.getVendors(request, response);
         response.json(APIresponse);
-
-    } catch (error) {
-        throw error;
-
+    } catch (error: any) {
+        response.json({
+            success: false,
+            error: error.message
+        })
     }
-
 }
-const getVendorByid = async function(){
+const getVendorByid = async function () {
     try {
         const APIresponse = adminService.getVendorByid(request, response);
         response.json(APIresponse);
-        
+
     } catch (error) {
         throw error;
-        
+
     }
 }
 
 
 
 router.post('/vendor', createVendor);
-router.get('/vendor', getVendor);
+router.get('/vendors', getVendors);
 router.get('/vendor:id', getVendorByid);
 
 module.exports = router
