@@ -33,9 +33,9 @@ const getVendors = async function (request: any, response: any) {
         })
     }
 }
-const getVendorByid = async function () {
+const getVendorByid = async function (request: any, response: any) {
     try {
-        const APIresponse = adminService.getVendorByid(request, response);
+        const APIresponse = await adminService.getVendorByid(request.params.id);
         response.json(APIresponse);
 
     } catch (error) {
@@ -48,6 +48,6 @@ const getVendorByid = async function () {
 
 router.post('/vendor', createVendor);
 router.get('/vendors', getVendors);
-router.get('/vendor:id', getVendorByid);
+router.get('/vendor/:id', getVendorByid);
 
 module.exports = router

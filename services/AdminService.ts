@@ -59,7 +59,22 @@ export class AdminService {
         }
 
     }
-    getVendorByid = async function (request: any, response: any) {
+    getVendorByid = async function (vendorId:string) {
+        try {
+            const vendorResult =  await vendor.findById(vendorId);
+            if (vendorResult !== null) {
+                return {
+                    success:true,
+                    data:vendorResult
+                }
+            } else {
+                return ({ "message": "Vendor data not available" })
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+        
 
     }
 
