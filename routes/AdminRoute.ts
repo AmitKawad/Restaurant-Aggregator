@@ -1,8 +1,10 @@
 import express, { request, response, NextFunction, Router } from 'express';
 const router = express.Router();
 import { AdminService } from './../services/AdminService'
+import { Password as PasswordUtility } from '../utility/Password';
 //create an instance of AdminController
 const adminService = new AdminService();
+const passwordUtility = new PasswordUtility();
 
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
@@ -35,8 +37,20 @@ const getVendors = async function (request: any, response: any) {
 }
 const getVendorByid = async function (request: any, response: any) {
     try {
-        const APIresponse = await adminService.getVendorByid(request.params.id);
-        response.json(APIresponse);
+        passwordUtility
+
+    } catch (error) {
+        throw error;
+
+    }
+}
+const login = async function (request: any, response: any) {
+    try {
+        const user = {
+            userName:request.query.userName
+        }
+        const accessToken = await passwordUtility.sign(user,process.env['ACCESSKEY'])
+        response.json({accessToken:accessToken});
 
     } catch (error) {
         throw error;
@@ -49,5 +63,6 @@ const getVendorByid = async function (request: any, response: any) {
 router.post('/vendor', createVendor);
 router.get('/vendors', getVendors);
 router.get('/vendor/:id', getVendorByid);
+router.post('/login', login);
 
 module.exports = router

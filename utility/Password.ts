@@ -24,4 +24,8 @@ export class Password {
     generateToken = async function(payload:authDTO){
         jsonWebToken.sign(payload, appConstants.APP_SECRET, { expiresIn: '1d'})
     };
+
+    sign = async function(user:any,secretToken ) :Promise<string>{
+        return jsonWebToken.sign(user,secretToken)
+    }
 }
