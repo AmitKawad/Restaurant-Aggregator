@@ -25,7 +25,6 @@ const createVendor = async function (request: any, response: any) {
 }
 const getVendors = async function (request: any, response: any) {
     try {
-        console.log('Inside getVendor');
         const APIresponse = await adminService.getVendors(request, response);
         response.json(APIresponse);
     } catch (error: any) {
@@ -60,8 +59,10 @@ const login = async function (request: any, response: any) {
 
 
 
+
+
 router.post('/vendor', createVendor);
-router.get('/vendors', getVendors);
+router.get('/vendors', passwordUtility.authenticateToken,getVendors);
 router.get('/vendor/:id', getVendorByid);
 router.post('/login', login);
 

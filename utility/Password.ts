@@ -3,6 +3,7 @@ import { authDTO } from '../dto/AuthDTO';
 import jsonWebToken from 'jsonwebtoken'; 
 import {appConstants} from './constants';
 import {Request} from 'express';
+require('dotenv').config();
 
 
 export class Password {
@@ -27,5 +28,25 @@ export class Password {
 
     sign = async function(user:any,secretToken ) :Promise<string>{
         return jsonWebToken.sign(user,secretToken)
+    }
+
+    authenticateToken =  function(request: any, response: any, NextFunction){
+        const authHeader = request.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+        if (token == null){
+            response.sendStatus(401)
+        }
+        const accesKey:any = process.env.ACCESSKEY;
+        jsonWebToken.verify(token,accesKey,(error,user)=>{
+            if(error){
+                return response.sendStatus(403);
+
+            }
+            request.user = user;
+            NextFunction();
+
+        })
+        
+    
     }
 }
