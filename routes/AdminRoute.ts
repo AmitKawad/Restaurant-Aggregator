@@ -25,6 +25,7 @@ const createVendor = async function (request: any, response: any) {
 }
 const getVendors = async function (request: any, response: any) {
     try {
+        passwordUtility.authorizeRole(request, response, ['Admin'])
         const APIresponse = await adminService.getVendors(request, response);
         response.json(APIresponse);
     } catch (error: any) {
@@ -46,10 +47,11 @@ const getVendorByid = async function (request: any, response: any) {
 const login = async function (request: any, response: any) {
     try {
         const user = {
-            userName:request.query.userName
+            userName: request.query.userName,
+            role: 'Admin'
         }
-        const accessToken = await passwordUtility.sign(user,process.env['ACCESSKEY'])
-        response.json({accessToken:accessToken});
+        const accessToken = await passwordUtility.sign(user, <string>process.env['ACCESSKEY'])
+        response.json({ accessToken: accessToken });
 
     } catch (error) {
         throw error;
@@ -62,7 +64,7 @@ const login = async function (request: any, response: any) {
 
 
 router.post('/vendor', createVendor);
-router.get('/vendors', passwordUtility.authenticateToken,getVendors);
+router.get('/vendors', passwordUtility.authenticateToken, getVendors);
 router.get('/vendor/:id', getVendorByid);
 router.post('/login', login);
 

@@ -1,7 +1,9 @@
 import { vendorInterface } from './../dto/Vendor.dto';
 const mongoose = require('mongoose');
+import { Password } from '../utility/Password';
 
 import { vendor } from '../models';
+const passwordUtility = new Password();
 export class AdminService {
 
     findVendor = async function (name: string | undefined, email?: string): Promise<string> {
@@ -16,6 +18,8 @@ export class AdminService {
         try {
             const inputParams: vendorInterface = request.body
             const { name, ownerName, foodType, pincode, address, phone, email, password } = inputParams;
+            const salt = await passwordUtility.generateSalt();
+            const encryptedpassword = await passwordUtility.createEncryptedPassword(password,salt);
             const newVendor = new vendor({
                 name: name,
                 ownerName: ownerName,
@@ -24,7 +28,8 @@ export class AdminService {
                 address: address,
                 phone: phone,
                 email: email,
-                password: password
+                password: encryptedpassword,
+                salt:salt
             })
             const checkExisting: string = await this.findVendor(undefined, email);
             if (checkExisting) {

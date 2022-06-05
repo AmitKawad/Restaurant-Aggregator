@@ -26,8 +26,8 @@ export class Password {
         jsonWebToken.sign(payload, appConstants.APP_SECRET, { expiresIn: '1d'})
     };
 
-    sign = async function(user:any,secretToken ) :Promise<string>{
-        return jsonWebToken.sign(user,secretToken)
+    sign = async function(user:any,secretToken:string ) :Promise<string>{
+        return jsonWebToken.sign(user,secretToken,{expiresIn:'1hr'})
     }
 
     authenticateToken =  function(request: any, response: any, NextFunction){
@@ -46,7 +46,14 @@ export class Password {
             NextFunction();
 
         })
+       
         
     
     }
+    authorizeRole =  function(request: any, response: any, role:string[]){
+        if(!role.includes(request.user.role) ){
+            response.sendStatus(401);
+        }
+    }
+    
 }
