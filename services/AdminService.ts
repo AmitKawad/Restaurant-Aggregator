@@ -1,12 +1,13 @@
-import { vendorInterface } from './../dto/Vendor.dto';
+import { vendorInterface, VendorPayload } from './../dto/Vendor.dto';
 const mongoose = require('mongoose');
 import { Password } from '../utility/Password';
+import { ROLES } from '../utility/constants';
 
 import { vendor } from '../models';
 const passwordUtility = new Password();
 export class AdminService {
 
-    findVendor = async function (name: string | undefined, email?: string): Promise<string> {
+    findVendor = async function (name: string | undefined, email?: string): Promise<vendorInterface> {
         if (email) {
             return await vendor.findOne({ email: email })
         } else {
@@ -29,9 +30,10 @@ export class AdminService {
                 phone: phone,
                 email: email,
                 password: encryptedpassword,
-                salt:salt
+                salt:salt,
+                role:ROLES.VENDOR
             })
-            const checkExisting: string = await this.findVendor(undefined, email);
+            const checkExisting: vendorInterface = await this.findVendor(undefined, email);
             if (checkExisting) {
                 throw new Error("Vendor already exists");
             }

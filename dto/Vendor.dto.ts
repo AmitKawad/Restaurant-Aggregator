@@ -6,7 +6,10 @@ export interface vendorInterface {
     address:string,
     phone:string,
     email:string,
-    password:string
+    password:string,
+    salt:string
+    role:string
+
 
 }
 

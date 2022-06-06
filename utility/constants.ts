@@ -2,4 +2,9 @@ const appConstants  = {
     "APP_SECRET": '232refedc'
 
 }
-export {appConstants};
+const ROLES = {
+    ADMIN: 'Admin',
+    VENDOR: 'Vendor'
+
+}
+export {appConstants,ROLES};
