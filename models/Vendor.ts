@@ -11,6 +11,18 @@ const vendorSchema = new mongoose.Schema({
     salt:{type:String, required:true},
     role:{type:String, required:true}
 
+},{
+    toJSON: {
+        transform(doc, ret){
+            delete ret.password;
+            delete ret.salt;
+            delete ret.__v;
+            delete ret.createdAt;
+            delete ret.updatedAt;
+
+        }
+    },
+    timestamps: true
 })
 const vendor = mongoose.model('vendor',vendorSchema);
 export { vendor }
