@@ -68,7 +68,7 @@ const updateMenu = async function (request: any, response: any) {
 const RequestOTP = async function(request, response){
     const { mobile } = request.params;
     const message = Math.floor(Math.random() * (3000 - 1000 + 1) + 1000)
-    const client = require('twilio')('AC6bad221192f58a903fa1eed45e4ec784', 'd7607f286456b6a79140a49d852a49c9');
+    const client = require('twilio')(process.env['SID'], process.env['APIKEY']);
     await client.messages
         .create({
             body: message,
