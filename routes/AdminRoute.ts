@@ -11,6 +11,7 @@ router.get('/', (request, response) => {
 })
 const createVendor = async function (request: any, response: any) {
     try {
+        passwordUtility.authorizeRole(request, response, ['Admin'])
         const APIresponse = await adminService.createVendor(request, response);
         response.json(APIresponse);
 

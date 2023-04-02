@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const vendorSchema = new mongoose.Schema({
     name:{ type: String, required: true },
-    ownerName: { type: String, required: true },
-    foodType:[{ type: String, required: true }],
     pincode: { type: String, required: true },
     address:{ type: String, required: true },
     phone:{ type: String, required: true },
@@ -10,7 +8,8 @@ const vendorSchema = new mongoose.Schema({
     password:{ type: String, required: true },
     salt:{type:String, required:true},
     role:{type:String, required:true},
-    food:[{foodType:String,dishes:[String]}]
+    openOrders:[{orderNumber:String}],
+    completedOrders:[{orderNumber:String}]
 
 },{
     toJSON: {

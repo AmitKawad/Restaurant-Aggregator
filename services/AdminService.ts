@@ -18,7 +18,7 @@ export class AdminService {
     createVendor = async function (this: AdminService, request: any, response: any) {
         try {
             const inputParams: vendorInterface = request.body
-            const { name, ownerName, foodType, pincode, address, phone, email, password } = inputParams;
+            const { name, ownerName, foodType, pincode, address, phone, email, password, food } = inputParams;
             const salt = await passwordUtility.generateSalt();
             const encryptedpassword = await passwordUtility.createEncryptedPassword(password,salt);
             const newVendor = new vendor({
@@ -31,7 +31,8 @@ export class AdminService {
                 email: email,
                 password: encryptedpassword,
                 salt:salt,
-                role:ROLES.VENDOR
+                role:ROLES.VENDOR,
+                food:food
             })
             const checkExisting: vendorInterface = await this.findVendor(undefined, email);
             if (checkExisting) {

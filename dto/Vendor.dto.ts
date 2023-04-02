@@ -1,3 +1,4 @@
+import { food } from './food';
 export interface vendorInterface {
     name:string,
     ownerName: string,
@@ -7,8 +8,9 @@ export interface vendorInterface {
     phone:string,
     email:string,
     password:string,
-    salt:string
-    role:string
+    salt:string,
+    role:string,
+    food:food
 
 
 }
