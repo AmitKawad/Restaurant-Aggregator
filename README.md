@@ -1,2 +1,2 @@
-# Food Aggregator Application!
+# Restaurant Aggregator Application!
 [Uploading API flow.svg…]()
