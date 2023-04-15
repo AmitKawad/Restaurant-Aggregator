@@ -51,7 +51,6 @@ const updateMenu = async function (request: any, response: any) {
     passwordUtility.authorizeRole(request, response, ['Vendor']);
     const filter = { email: request.params.email };
     console.log('request.params.email', request.params.email)
-    console.log('inputParameters', food);
     const update = { food: food }
     const doc = await vendor.findOneAndUpdate(filter, update, {
         new: true
