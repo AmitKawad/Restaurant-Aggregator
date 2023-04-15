@@ -1,1 +1,1 @@
-export * from './Vendor'
+export * from './Restaurant'

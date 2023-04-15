@@ -1,5 +1,5 @@
 import { food } from './food';
-export interface vendorInterface {
+export interface restaurantInterface {
     name:string,
     ownerName: string,
     foodType:[string],
@@ -15,7 +15,7 @@ export interface vendorInterface {
 
 }
 
-export interface VendorPayload {
+export interface restaurantPayload {
 
     _id: string;
     email: string;

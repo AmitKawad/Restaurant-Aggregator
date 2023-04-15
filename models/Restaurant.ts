@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const vendorSchema = new mongoose.Schema({
+const restaurantSchema = new mongoose.Schema({
     name:{ type: String, required: true },
     ownerName: { type: String, required: true },
     foodType:[{ type: String, required: true }],
@@ -25,5 +25,5 @@ const vendorSchema = new mongoose.Schema({
     },
     timestamps: true
 })
-const vendor = mongoose.model('vendor',vendorSchema);
-export { vendor }
+const restaurant = mongoose.model('restaurants',restaurantSchema);
+export { restaurant }

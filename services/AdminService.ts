@@ -1,27 +1,27 @@
-import { vendorInterface, VendorPayload } from './../dto/Vendor.dto';
+import { restaurantInterface, restaurantPayload } from '../dto/Restaurant.dto.';
 const mongoose = require('mongoose');
 import { Password } from '../utility/Password';
 import { ROLES } from '../utility/constants';
 
-import { vendor } from '../models';
+import { restaurant } from '../models';
 const passwordUtility = new Password();
 export class AdminService {
 
-    findVendor = async function (name: string | undefined, email?: string): Promise<vendorInterface> {
+    findRestaurant = async function (name: string | undefined, email?: string): Promise<restaurantInterface> {
         if (email) {
-            return await vendor.findOne({ email: email })
+            return await restaurant.findOne({ email: email })
         } else {
-            return await vendor.findById(name);
+            return await restaurant.findById(name);
         }
 
     }
-    createVendor = async function (this: AdminService, request: any, response: any) {
+    addRestaurant = async function (this: AdminService, request: any, response: any) {
         try {
-            const inputParams: vendorInterface = request.body
+            const inputParams: restaurantInterface = request.body
             const { name, ownerName, foodType, pincode, address, phone, email, password, food } = inputParams;
             const salt = await passwordUtility.generateSalt();
             const encryptedpassword = await passwordUtility.createEncryptedPassword(password,salt);
-            const newVendor = new vendor({
+            const newRestaurant = new restaurant({
                 name: name,
                 ownerName: ownerName,
                 foodType: foodType,
@@ -31,14 +31,14 @@ export class AdminService {
                 email: email,
                 password: encryptedpassword,
                 salt:salt,
-                role:ROLES.VENDOR,
+                role:ROLES.RESTAURANT,
                 food:food
             })
-            const checkExisting: vendorInterface = await this.findVendor(undefined, email);
+            const checkExisting: restaurantInterface = await this.findRestaurant(undefined, email);
             if (checkExisting) {
-                throw new Error("Vendor already exists");
+                throw new Error("Restaurant already exists");
             }
-            const insertResult = await newVendor.save();
+            const insertResult = await newRestaurant.save();
             if (insertResult) {
                 return {
                     success: true,
@@ -50,16 +50,16 @@ export class AdminService {
         }
 
     }
-    getVendors = async function (request: any, response: any) {
+    getRestaurants = async function (request: any, response: any) {
         try {
-            const vendors = await vendor.find()
-            if (vendors !== null) {
+            const restaurants = await restaurant.find()
+            if (restaurants !== null) {
                 return {
                     success:true,
-                    data:vendors
+                    data:restaurants
                 }
             } else {
-                return ({ "message": "Vendors data not available" })
+                return ({ "message": "Restaurant data not available" })
             }
         }
         catch (error) {
@@ -67,16 +67,16 @@ export class AdminService {
         }
 
     }
-    getVendorByid = async function (vendorId:string) {
+    getRestaurantByid = async function (restaurantId:string) {
         try {
-            const vendorResult =  await vendor.findById(vendorId);
-            if (vendorResult !== null) {
+            const restaurantResult =  await restaurant.findById(restaurantId);
+            if (restaurantResult !== null) {
                 return {
                     success:true,
-                    data:vendorResult
+                    data:restaurantResult
                 }
             } else {
-                return ({ "message": "Vendor data not available" })
+                return ({ "message": "Restaurant data not available" })
             }
         }
         catch (error) {

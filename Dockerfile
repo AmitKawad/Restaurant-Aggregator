@@ -15,6 +15,7 @@ RUN npm install -g ts-node
 
 
 
+
 COPY . .
 
 ENV PORT=3001

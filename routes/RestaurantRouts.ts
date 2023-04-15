@@ -1,14 +1,13 @@
-import { food } from './../dto/food';
-import { VendorPayload, vendorInterface } from './../dto/Vendor.dto';
-import { Password } from './../utility/Password';
+import { food } from '../dto/food';
+import { restaurantPayload, restaurantInterface } from '../dto/Restaurant.dto.';
+import { Password } from '../utility/Password';
 import express, { request, response, NextFunction, Router } from 'express';
 const router = express.Router();
 import { Password as PasswordUtility } from '../utility/Password';
 const passwordUtility = new PasswordUtility();
-import { AdminService } from './../services/AdminService'
+import { AdminService } from '../services/AdminService'
 import jwt_decode from "jwt-decode";
-import { vendor } from '../models';
-//
+import { restaurant } from '../models';
 import { RedisClientType } from "@redis/client";
 import { createClient } from 'redis';
 const redisClient = createClient();
@@ -18,21 +17,18 @@ redisClient.connect().then(function() {
 }).catch(function (error:Error) {
     console.error('Error in eastablishing connection',error)
 })
-router.get('/', (request, response) => {
-    response.json({ message: `Hello from vendor route` });
 
-})
 const login = async function (request: any, response: any) {
     try {
         const adminService = new AdminService();
-        const vendor: vendorInterface = await adminService.findVendor('', request.params.email)
-        if (vendor == null) {
-            response.json({ message: 'Vendor with the provided email does not exist' });
+        const restaurant: restaurantInterface = await adminService.findRestaurant('', request.params.email)
+        if (restaurant == null) {
+            response.json({ message: 'Restaurant with the provided email does not exist' });
         } else {
-            await passwordUtility.validatePassword(request.params.password, vendor.password, vendor.salt)
+            await passwordUtility.validatePassword(request.params.password, restaurant.password, restaurant.salt)
             const user = {
                 email: request.params.email,
-                role: 'Vendor'
+                role: 'Restaurant'
             }
             const accessToken = await passwordUtility.sign(user, <string>process.env['ACCESSKEY'])
             response.json({ accessToken: accessToken });
@@ -48,17 +44,17 @@ const login = async function (request: any, response: any) {
 
 const updateMenu = async function (request: any, response: any) {
     const food = request.body;
-    passwordUtility.authorizeRole(request, response, ['Vendor']);
+    passwordUtility.authorizeRole(request, response, ['Restaurant']);
     const filter = { email: request.params.email };
     console.log('request.params.email', request.params.email)
+    console.log('inputParameters', food);
     const update = { food: food }
-    const doc = await vendor.findOneAndUpdate(filter, update, {
+    const doc = await restaurant.findOneAndUpdate(filter, update, {
         new: true
     });
-    console.log('doc', doc)
     const adminService = new AdminService();
-    const updatedVendorDetails: vendorInterface = await adminService.findVendor(undefined, request.params.email);
-    response.json({ updatedVendorDetails });
+    const updatedRestaurantDetails: restaurantInterface = await adminService.findRestaurant(undefined, request.params.email);
+    response.json({ updatedRestaurantDetails });
 
 
 
@@ -95,7 +91,7 @@ const validateOTP = async function(request,response){
 
 
 router.post('/login/:email/:password', login);
-router.put('/updateMenu/:email', passwordUtility.authenticateToken, passwordUtility.authorizeVendor, updateMenu);
+router.put('/updateMenu/:email', passwordUtility.authenticateToken, passwordUtility.authorizeRestaurant, updateMenu);
 router.post('/requestOTP/:mobile', RequestOTP)
 router.post('/validateOTP/:mobile/:OTP',validateOTP)
 

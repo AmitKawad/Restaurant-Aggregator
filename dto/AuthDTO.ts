@@ -1,3 +1,3 @@
-import {VendorPayload} from './Vendor.dto'
-type authDTO = VendorPayload;
+import {restaurantPayload} from './Restaurant.dto.'
+type authDTO = restaurantPayload;
 export {authDTO};

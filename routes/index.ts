@@ -1,2 +1,2 @@
 import * as adminRoute from './AdminRoute';
-import * as vendorRoute from './VendorRoute'
+import * as restaurantsRoute from './RestaurantRouts'

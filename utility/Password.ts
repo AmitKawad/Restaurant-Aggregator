@@ -55,15 +55,15 @@ export class Password {
             return response.sendStatus(403);
         }
     }
-    authorizeVendor = function (request: any, response: any,NextFunction): void {
+    authorizeRestaurant = function (request: any, response: any,NextFunction): void {
         const authHeader = request.headers['authorization'];
         const token: any = authHeader && authHeader.split(' ')[1];
-        const vendorEmail = request.params.email;
+        const restaurantEmail = request.params.email;
         if (token == null) {
             response.sendStatus(401)
         }
         const decodedToken: {email:string} = jwt_decode(token);
-        if(vendorEmail!==decodedToken.email){
+        if(restaurantEmail!==decodedToken.email){
             return response.sendStatus(403);
         }
         NextFunction();

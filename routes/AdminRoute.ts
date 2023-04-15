@@ -9,10 +9,10 @@ const passwordUtility = new PasswordUtility();
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
 })
-const createVendor = async function (request: any, response: any) {
+const addRestaurant = async function (request: any, response: any) {
     try {
         passwordUtility.authorizeRole(request, response, ['Admin'])
-        const APIresponse = await adminService.createVendor(request, response);
+        const APIresponse = await adminService.addRestaurant(request, response);
         response.json(APIresponse);
 
     } catch (error: any) {
@@ -24,10 +24,10 @@ const createVendor = async function (request: any, response: any) {
     }
 
 }
-const getVendors = async function (request: any, response: any) {
+const getRestaurants = async function (request: any, response: any) {
     try {
         passwordUtility.authorizeRole(request, response, ['Admin'])
-        const APIresponse = await adminService.getVendors(request, response);
+        const APIresponse = await adminService.getRestaurants(request, response);
         response.json(APIresponse);
     } catch (error: any) {
         response.json({
@@ -36,7 +36,7 @@ const getVendors = async function (request: any, response: any) {
         })
     }
 }
-const getVendorByid = async function (request: any, response: any) {
+const getRestaurantByid = async function (request: any, response: any) {
     try {
         passwordUtility
 
@@ -64,9 +64,9 @@ const login = async function (request: any, response: any) {
 
 
 
-router.post('/vendor', createVendor);
-router.get('/vendors', passwordUtility.authenticateToken, getVendors);
-router.get('/vendor/:id', getVendorByid);
+router.post('/restaurant', addRestaurant);
+router.get('/restaurants', passwordUtility.authenticateToken, getRestaurants);
+router.get('/restaurant/:id', getRestaurantByid);
 router.post('/login', login);
 
 module.exports = router
