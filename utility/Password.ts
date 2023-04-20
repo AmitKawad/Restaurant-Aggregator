@@ -5,6 +5,8 @@ import { appConstants } from './constants';
 import { Request, NextFunction } from 'express';
 require('dotenv').config();
 import jwt_decode from "jwt-decode";
+import { tokeninterInterface } from '../dto/TokenInterface';
+import { jwt } from 'twilio';
 
 
 export class Password {
@@ -40,8 +42,8 @@ export class Password {
 
             }
             request.user = user;
+           
             NextFunction();
-
         })
     }
     authorizeRole = function (request: any, response: any, role: string[]): void {
@@ -55,18 +57,22 @@ export class Password {
             return response.sendStatus(403);
         }
     }
-    authorizeRestaurant = function (request: any, response: any,NextFunction): void {
+    decodeToken = function (request: any): tokeninterInterface {
         const authHeader = request.headers['authorization'];
         const token: any = authHeader && authHeader.split(' ')[1];
-        const restaurantEmail = request.params.email;
-        if (token == null) {
-            response.sendStatus(401)
-        }
-        const decodedToken: {email:string} = jwt_decode(token);
-        if(restaurantEmail!==decodedToken.email){
-            return response.sendStatus(403);
-        }
-        NextFunction();
+        const decodedToken: {'role':string,'email':string,'iat':number,'exp':number,'name':string} = jwt_decode(token);
+        return decodedToken;
+    }
+
+    verifyJWT = function(jwtToken:string){
+        jsonWebToken.verify(jwtToken, process.env.ACCESSKEY!, (error, user) => {
+            if (error) {
+                throw new Error(`Token verification Failed`)
+
+            }
+        })
+        
+
     }
 
 }

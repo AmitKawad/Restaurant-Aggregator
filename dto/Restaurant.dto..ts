@@ -11,8 +11,18 @@ export interface restaurantInterface {
     salt:string,
     role:string,
     food:food
+    activeOrders:[string],
+    deliveredOrders:[string]
 
 
+}
+export interface restaurantUpdateInterface {
+    name:string,
+    ownerName: string,
+    foodType:[string],
+    pincode: string,
+    address:string,
+    phone:string,
 }
 
 export interface restaurantPayload {

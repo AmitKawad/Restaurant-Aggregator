@@ -1,34 +1,25 @@
+import { RestaurantService } from './../services/RestaurantService';
 import express, { request, response, NextFunction, Router } from 'express';
 const router = express.Router();
 import { AdminService } from './../services/AdminService'
 import { Password as PasswordUtility } from '../utility/Password';
+import { ROLES } from '../utility/constants';
 //create an instance of AdminController
-const adminService = new AdminService();
+const restaurantService = new RestaurantService();
 const passwordUtility = new PasswordUtility();
 
 router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
 })
-const addRestaurant = async function (request: any, response: any) {
-    try {
-        passwordUtility.authorizeRole(request, response, ['Admin'])
-        const APIresponse = await adminService.addRestaurant(request, response);
-        response.json(APIresponse);
 
-    } catch (error: any) {
-        response.json({
-            success: false,
-            error: error.message
-        })
-
-    }
-
-}
 const getRestaurants = async function (request: any, response: any) {
     try {
-        passwordUtility.authorizeRole(request, response, ['Admin'])
-        const APIresponse = await adminService.getRestaurants(request, response);
-        response.json(APIresponse);
+        if (request.user.role === ROLES.ADMIN) {
+
+            const APIresponse = await restaurantService.getRestaurants(request, response);
+            response.json(APIresponse);
+        }
+
     } catch (error: any) {
         response.json({
             success: false,
@@ -36,9 +27,13 @@ const getRestaurants = async function (request: any, response: any) {
         })
     }
 }
-const getRestaurantByid = async function (request: any, response: any) {
+const getRestaurantByEmail = async function (request: any, response: any) {
     try {
-        passwordUtility
+        if(request.user.role === ROLES.ADMIN){
+
+        }else if(request.user.role === ROLES.RESTAURANT){
+
+        }
 
     } catch (error) {
         throw error;
@@ -47,15 +42,25 @@ const getRestaurantByid = async function (request: any, response: any) {
 }
 const login = async function (request: any, response: any) {
     try {
-        const user = {
-            userName: request.query.userName,
-            role: 'Admin'
+        const adminService = new AdminService();
+        console.log(request.query.userName)
+        const admin = await adminService.findAdmin(request.query.userName)
+        if (admin == null) {
+            response.json({ message: 'Admin with the provided name does not exist' });
+        } else {
+            await passwordUtility.validatePassword(request.query.password, admin.password, admin.salt)
+            const user = {
+                userName: request.query.userName,
+                role: 'Admin'
+            }
+            const accessToken = await passwordUtility.sign(user, <string>process.env['ACCESSKEY'])
+            response.json({ accessToken: accessToken });
         }
-        const accessToken = await passwordUtility.sign(user, <string>process.env['ACCESSKEY'])
-        response.json({ accessToken: accessToken });
-
-    } catch (error) {
-        throw error;
+    } catch (error:any) {
+        response.json({
+            success: false,
+            error: error.message
+        })
 
     }
 }
@@ -64,9 +69,9 @@ const login = async function (request: any, response: any) {
 
 
 
-router.post('/restaurant', addRestaurant);
 router.get('/restaurants', passwordUtility.authenticateToken, getRestaurants);
-router.get('/restaurant/:id', getRestaurantByid);
+router.get('/restaurant/:email',passwordUtility.authenticateToken, getRestaurantByEmail);
 router.post('/login', login);
+
 
 module.exports = router

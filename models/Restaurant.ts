@@ -10,7 +10,9 @@ const restaurantSchema = new mongoose.Schema({
     password:{ type: String, required: true },
     salt:{type:String, required:true},
     role:{type:String, required:true},
-    food:[{foodType:String,dishes:[String]}]
+    food:[{foodType:String,dishes:[String]}],
+    activeOrders:[{orderNumber:String,customerName:String,customerContact:String}],
+    deliveredOrders:[{orderNumber:String,customerName:String,customerContact:String}]
 
 },{
     toJSON: {
