@@ -16,7 +16,7 @@ export class AdminService {
                 return await admin.findById(name);
             }
         } catch (error) {
-            console.log(error);
+           throw error
         }
     }
     

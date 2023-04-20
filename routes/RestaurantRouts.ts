@@ -136,14 +136,11 @@ const updateMenu = async function (request: any, response: any) {
     const food = request.body;
     if (request.user.role === ROLES.RESTAURANT) {
         const resturantEmail = passwordUtility.decodeToken(request).email
-        const filter = resturantEmail;
-        const update = { food: food }
-        const doc = await restaurant.findOneAndUpdate(filter, update, {
-            new: true
-        });
-        const adminService = new AdminService();
-        const updatedRestaurantDetails: restaurantInterface = await restaurantService.findRestaurant(undefined, request.params.email);
-        response.json({ updatedRestaurantDetails });
+        const updateMenuResult = await restaurantService.updateMenu(resturantEmail,food);
+        
+        response.json({ succss:true,message:updateMenuResult });
+    }else{
+        response.sendStatus(403)
     }
     
 }
@@ -202,8 +199,8 @@ const deleteRestaurant = async function (request, response) {
 
 router.post('/login/:email/:password', login);
 router.post('', addRestaurant);
+router.put('/updateMenu', passwordUtility.authenticateToken, updateMenu);
 router.put('/:email',passwordUtility.authenticateToken, updateRestaurantDetails);
-router.put('/updateMenu/', passwordUtility.authenticateToken, updateMenu);
 router.post('/requestOTP/:mobile', RequestOTP)
 router.post('/validateOTP/:mobile/:OTP',validateOTP)
 router.delete('/:email',passwordUtility.authenticateToken,deleteRestaurant);

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const restaurantSchema = new mongoose.Schema({
+const customerSchema = new mongoose.Schema({
     name:{ type: String, required: true },
     pincode: { type: String, required: true },
     address:{ type: String, required: true },
@@ -24,5 +24,5 @@ const restaurantSchema = new mongoose.Schema({
     },
     timestamps: true
 })
-const restaurant = mongoose.model('restaurant',vendorSchema);
-export { restaurant }
+const customer = mongoose.model('customers',customerSchema);
+export { customer }

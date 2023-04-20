@@ -1,3 +1,5 @@
+import { food } from './../dto/food';
+import { request, response } from 'express';
 import { restaurant } from '../models/Restaurant';
 import { ROLES } from '../utility/constants';
 import { Password } from '../utility/Password';
@@ -6,9 +8,9 @@ import { AdminService } from './AdminService';
 const passwordUtility = new Password();
 
 export class RestaurantService {
-     async updateRestaurantDetails (updateRestaurantDetailss: restaurantUpdateInterface, restaurantEmail: string): Promise<string> {
+     async updateRestaurantDetails (updateRestaurantDetails: restaurantUpdateInterface, restaurantEmail: string): Promise<string> {
         try {
-            const { name, ownerName, foodType, pincode, address, phone } = updateRestaurantDetailss;
+            const { name, ownerName, foodType, pincode, address, phone } = updateRestaurantDetails;
             const filter = restaurantEmail;
             const update = { name: name, ownerName: ownerName, foodType: foodType, pincode: pincode, address: address, phone: phone }
             const doc = await restaurant.findOneAndUpdate(filter, update, {
@@ -80,8 +82,13 @@ export class RestaurantService {
     }
     async addRestaurant (request: any, response: any) {
         try {
+            
             const inputParams: restaurantInterface = request.body
             const { name, ownerName, foodType, pincode, address, phone, email, password, food } = inputParams;
+            const checkExisting: restaurantInterface = await this.findRestaurant(undefined, email);
+            if (checkExisting) {
+                throw new Error("Restaurant already exists");
+            }
             const salt = await passwordUtility.generateSalt();
             const encryptedpassword = await passwordUtility.createEncryptedPassword(password,salt);
             const newRestaurant = new restaurant({
@@ -100,10 +107,6 @@ export class RestaurantService {
                 deliveredOrders:[]
                 
             })
-            const checkExisting: restaurantInterface = await this.findRestaurant(undefined, email);
-            if (checkExisting) {
-                throw new Error("Restaurant already exists");
-            }
             const insertResult = await newRestaurant.save();
             if (insertResult) {
                 return {
@@ -113,6 +116,42 @@ export class RestaurantService {
             }
         } catch (error) {
             throw error;
+        }
+
+    }
+    async updateMenu(restaurantEmail:string,food:any):Promise<string>{
+        try{
+        const filter = restaurantEmail;
+        const update = { food: food }
+        const doc = await restaurant.findOneAndUpdate(filter, update, {
+            new: true
+        });
+        if(doc){
+            return `The menu has been updated successfully`
+        } else{
+            return `The menu could not be updated please try again`
+        }
+    }catch(error){
+        throw error;
+    }
+    }
+    async getRestaurantsAndMenu():Promise<{retaurantName:string,food:{foodType: string, dishes: string[]}[]}[] | null>{
+        try {
+          
+            const restaurants:restaurantInterface[] = await restaurant.find({}, { _id: 0 })
+            const retaurantsAndFoodOptions:{retaurantName:string,food:{foodType: string, dishes: string[]}[]}[] = [];
+
+            if (restaurants !== null) {
+                for (let index = 0; index < restaurants.length; index++) {
+                    retaurantsAndFoodOptions!.push({retaurantName:restaurants[index].name,food:restaurants[index].food})
+                }
+                console.log(JSON.stringify(retaurantsAndFoodOptions))
+                return retaurantsAndFoodOptions
+            } else {
+                return null;
+            }
+        }catch(error){
+            throw error
         }
 
     }

@@ -10,7 +10,7 @@ export interface restaurantInterface {
     password:string,
     salt:string,
     role:string,
-    food:food
+    food:{ foodType: string, dishes: string[]}[]
     activeOrders:[string],
     deliveredOrders:[string]
 

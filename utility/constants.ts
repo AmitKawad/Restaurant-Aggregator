@@ -4,7 +4,8 @@ const appConstants  = {
 }
 const ROLES = {
     ADMIN: 'Admin',
-    RESTAURANT: 'Restaurant'
+    RESTAURANT: 'Restaurant',
+    CUSTOMER:'Customer'
 
 }
 export {appConstants,ROLES};

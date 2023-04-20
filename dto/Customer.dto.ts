@@ -5,4 +5,5 @@ export interface customerInterface{
     phone:string
     email:string
     password:string
+    salt?:string
 }

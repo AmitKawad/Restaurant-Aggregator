@@ -22,6 +22,10 @@ const restaurantSchema = new mongoose.Schema({
             delete ret.__v;
             delete ret.createdAt;
             delete ret.updatedAt;
+            for (let index = 0; index < ret.food.length; index++) {
+                delete ret.food[index]._id
+                
+            }
 
         }
     },
