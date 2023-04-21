@@ -6,4 +6,6 @@ export interface customerInterface{
     email:string
     password:string
     salt?:string
+    activeOrders:{ orderNumber: string, items: {itemName:string,quantity:number}[],restaurantName:string}[],
+    deliveredOrders:{orderNumber: string, items: {itemName:string,quantity:number}[],restaurantName:string}[]
 }

@@ -11,8 +11,8 @@ export interface restaurantInterface {
     salt:string,
     role:string,
     food:{ foodType: string, dishes: string[]}[]
-    activeOrders:[string],
-    deliveredOrders:[string]
+    activeOrders:{ orderNumber: string, items: {itemName:string,quantity:number}[],customerEmail:string}[],
+    deliveredOrders:{orderNumber: string, items: {itemName:string,quantity:number}[],customerEmail:string}[]
 
 
 }

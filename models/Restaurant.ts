@@ -11,8 +11,8 @@ const restaurantSchema = new mongoose.Schema({
     salt:{type:String, required:true},
     role:{type:String, required:true},
     food:[{foodType:String,dishes:[String]}],
-    activeOrders:[{orderNumber:String,customerName:String,customerContact:String}],
-    deliveredOrders:[{orderNumber:String,customerName:String,customerContact:String}]
+    activeOrders:[{orderNumber:String, items:[{itemName:String,quantity:Number,}],customerEmail:String}],
+    deliveredOrders:[{orderNumber:String, items:[{itemName:String,quantity:Number,}],customerEmail:String}]
 
 },{
     toJSON: {

@@ -8,8 +8,8 @@ const customerSchema = new mongoose.Schema({
     password:{ type: String, required: true },
     salt:{type:String, required:true},
     role:{type:String, required:true},
-    openOrders:[{orderNumber:String}],
-    completedOrders:[{orderNumber:String}]
+    activeOrders:[{orderNumber:String, items:[{itemName:String,quantity:Number,}],restaurantName:String}],
+    deliveredOrders:[{orderNumber:String, items:[{itemName:String,quantity:Number,}],restaurantName:String}]
 
 },{
     toJSON: {
@@ -19,6 +19,8 @@ const customerSchema = new mongoose.Schema({
             delete ret.__v;
             delete ret.createdAt;
             delete ret.updatedAt;
+            
+            
 
         }
     },

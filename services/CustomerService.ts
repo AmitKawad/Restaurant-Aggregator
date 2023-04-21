@@ -39,7 +39,6 @@ export class CustomerService {
                     }
                }
           } catch (error) {
-               console.log('inside catch')
                throw error;
           }
 
