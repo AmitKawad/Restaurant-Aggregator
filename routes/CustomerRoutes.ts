@@ -1,4 +1,4 @@
-import { createOrder } from './../dto/CreateOrder';
+import { createOrderInterface } from './../dto/CreateOrder';
 import { Utility } from './../utility/Utility';
 import { RestaurantService } from './../services/RestaurantService';
 import { customerInterface } from './../dto/Customer.dto';
@@ -72,10 +72,18 @@ const getRestaurantMenu = async function (request, response) {
     response.json({ success: true, data: restaurantAndFoodOptions })
 }
 const createOrder = async function (request, response) {
-    const orderDetails:createOrder = request.body;
+try{
+    const orderDetails:createOrderInterface = request.body;
     const createOrderResponse = await restaurantService.createOrder(orderDetails,request.user.email);
     
     response.json({ success: true, data: createOrderResponse })
+}catch(error:any){
+    response.json({
+        success: false,
+        error: error.message
+    })
+
+}
 }
 router.post('', signup)
 router.post('/login', login)

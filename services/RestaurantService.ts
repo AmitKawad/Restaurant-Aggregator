@@ -6,7 +6,7 @@ import { ROLES } from '../utility/constants';
 import { Password } from '../utility/Password';
 import { restaurantInterface, restaurantUpdateInterface, restaurantActiveOrders } from './../dto/Restaurant.dto.';
 import { AdminService } from './AdminService';
-import { createOrder } from '../dto';
+import { createOrderInterface } from '../dto';
 import { customer } from '../models';
 const passwordUtility = new Password();
 
@@ -126,9 +126,7 @@ export class RestaurantService {
         try {
             const filter = restaurantEmail;
             const update = { food: food }
-            const doc = await restaurant.findOneAndUpdate(filter, update, {
-                new: true
-            });
+            const doc = await restaurant.updateOne({email:restaurantEmail}, update);
             if (doc) {
                 return `The menu has been updated successfully`
             } else {
@@ -158,7 +156,7 @@ export class RestaurantService {
         }
 
     }
-    async createOrder(orderDetials: createOrder, customerEmail: string): Promise<string> {
+    async createOrder(orderDetials: createOrderInterface, customerEmail: string): Promise<string> {
         try {
             const availableItems: string[] = [];
             const unavailableItems: string[] = [];
@@ -175,7 +173,7 @@ export class RestaurantService {
                     }
                 }
             }
-            if (unavailableItems.length) {
+            if (unavailableItems.length || restaurantDetails.food.length ===0 ) {
                 console.log(unavailableItems)
                 throw new Error(`Some items are not available. Please remove the items and try again`)
             } else {
@@ -211,11 +209,9 @@ export class RestaurantService {
                 }
                 const filter = restaurantDetails.email;
                 const update = { activeOrders: restaurantActiveOrders }
-                const doc = await restaurant.findOneAndUpdate(filter, update, {
-                    new: true
-                });
+                const doc = await restaurant.updateOne({email:restaurantDetails.email}, update);
                 //update the customers active orders.
-                const customerDetails: customerInterface = await customer.findOne({ 'email': customerEmail });
+                const customerDetails: customerInterface = await customer.findOne({ email: customerEmail });
                 let customerActiveOrders: any = [];
                 if (customerDetails.activeOrders.length > 0) {
                     const customerActiveOrders = customerDetails.activeOrders;
@@ -231,9 +227,9 @@ export class RestaurantService {
                         restaurantName: restaurantDetails.name
                     }
                 }
-                const customerFilter = customerDetails.email;
+                const customerFilter = customerEmail;
                 const updateCustomerOrders = { activeOrders: customerActiveOrders }
-                const customerDoc = await customer.findOneAndUpdate(customerFilter, updateCustomerOrders, {
+                const customerDoc = await customer.updateOne({email:customerEmail}, updateCustomerOrders, {
                     new: true
                 });
                 console.log(customerDoc)
