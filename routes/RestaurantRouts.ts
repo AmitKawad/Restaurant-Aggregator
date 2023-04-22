@@ -1,4 +1,4 @@
-import { restaurantUpdateInterface } from './../dto/Restaurant.dto.';
+import { restaurantUpdateInterface, restaurantActiveOrders } from './../dto/Restaurant.dto.';
 import { food } from '../dto/food';
 import { restaurantPayload, restaurantInterface } from '../dto/Restaurant.dto.';
 import { Password } from '../utility/Password';
@@ -145,7 +145,7 @@ const updateMenu = async function (request: any, response: any) {
     
 }
 
-const RequestOTP = async function(request, response){
+const RequestOTP = async function(request:any, response:any){
     const { mobile } = request.params;
     const message = Math.floor(Math.random() * (3000 - 1000 + 1) + 1000)
     const client = require('twilio')(process.env['SID'], process.env['APIKEY']);
@@ -162,7 +162,7 @@ const RequestOTP = async function(request, response){
    
 }
 
-const validateOTP = async function(request,response){
+const validateOTP = async function(request:any,response:any){
     const getValue = await redisClient.get(request.params.mobile);
     if(request.params.OTP === getValue!.toString()){
         response.json({ message: "OTP successfully validated" });
@@ -173,7 +173,7 @@ const validateOTP = async function(request,response){
         })
     }
 }
-const deleteRestaurant = async function (request, response) {
+const deleteRestaurant = async function (request:any, response:any) {
     try {
         //Only admin can delete a restaurant. Check the role of the user.
         //If the user is not admin the below function will return a Forbidden response
@@ -195,6 +195,20 @@ const deleteRestaurant = async function (request, response) {
         })
     }
 }
+const getActiveOrders = async function(request:any,response:any){
+    try {
+        const activeOrdersResult: restaurantActiveOrders = await restaurantService.getRestaurantActiveOrders(request.user.email); 
+        response.json({
+            success:true,
+            data:activeOrdersResult
+        })
+    } catch (error:any) {
+        response.json({
+            success: false,
+            error: error.message
+        })
+    }
+}
 
 
 router.post('/login/:email/:password', login);
@@ -204,6 +218,7 @@ router.put('/:email',passwordUtility.authenticateToken, updateRestaurantDetails)
 router.post('/requestOTP/:mobile', RequestOTP)
 router.post('/validateOTP/:mobile/:OTP',validateOTP)
 router.delete('/:email',passwordUtility.authenticateToken,deleteRestaurant);
+router.get('/getActiveOrders',passwordUtility.authenticateToken,getActiveOrders)
 
 
 module.exports = router

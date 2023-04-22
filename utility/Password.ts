@@ -38,6 +38,7 @@ export class Password {
         const accesKey: any = process.env.ACCESSKEY;
         jsonWebToken.verify(token, accesKey, (error, user) => {
             if (error) {
+                console.log(error)
                 return response.sendStatus(403);
 
             }

@@ -4,7 +4,7 @@ import { request, response } from 'express';
 import { restaurant } from '../models/Restaurant';
 import { ROLES } from '../utility/constants';
 import { Password } from '../utility/Password';
-import { restaurantInterface, restaurantUpdateInterface } from './../dto/Restaurant.dto.';
+import { restaurantInterface, restaurantUpdateInterface, restaurantActiveOrders } from './../dto/Restaurant.dto.';
 import { AdminService } from './AdminService';
 import { createOrder } from '../dto';
 import { customer } from '../models';
@@ -246,6 +246,14 @@ export class RestaurantService {
         } catch (error) {
             throw error;
         }
+    }
+    async getRestaurantActiveOrders(restaurantEmail:string):Promise<restaurantActiveOrders>{
+        try {
+            return await restaurant.find({email:restaurantEmail},{activeOrders:1});
+        } catch (error) {
+            throw error;
+        }
+
     }
 
 }

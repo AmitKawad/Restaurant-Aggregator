@@ -25,6 +25,6 @@ const customerSchema = new mongoose.Schema({
         }
     },
     timestamps: true
-})
+},{ _id : false })
 const customer = mongoose.model('customers',customerSchema);
 export { customer }
