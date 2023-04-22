@@ -1,16 +1,22 @@
 import { customerInterface } from './../dto/Customer.dto';
-import { food } from './../dto/food';
-import { request, response } from 'express';
 import { restaurant } from '../models/Restaurant';
-import { ROLES } from '../utility/constants';
+import { MESSAGES, ROLES } from '../utility/constants';
 import { Password } from '../utility/Password';
 import { restaurantInterface, restaurantUpdateInterface, restaurantActiveOrders } from './../dto/Restaurant.dto.';
-import { AdminService } from './AdminService';
 import { createOrderInterface } from '../dto';
 import { customer } from '../models';
 const passwordUtility = new Password();
 
 export class RestaurantService {
+    /**
+     * 
+     * @param updateRestaurantDetails 
+     * @param restaurantEmail 
+     * @returns Promise<string>
+     * This method is used to update the restaurant details in the database. 
+     * The fields that can be updated are namem ownername, foodType, pincode, address, phone
+     * The email cant be updated as registered email is used as a primary identifier.
+     */
     async updateRestaurantDetails(updateRestaurantDetails: restaurantUpdateInterface, restaurantEmail: string): Promise<string> {
         try {
             const { name, ownerName, foodType, pincode, address, phone } = updateRestaurantDetails;
@@ -20,22 +26,28 @@ export class RestaurantService {
                 new: true
             });
             if (doc) {
-                return `Your details have been updated successfully`
+                return MESSAGES.RESTAURANT_DETAILS_UPDATE_SUCCESS
             } else {
-                return `Details could not be saved.`
+                return MESSAGES.RESTAURANT_DETAILS_UPDATE_FAILURE
             }
         } catch (error) {
             throw error
 
         }
     }
+    /**
+     * 
+     * @param restaurantEmail 
+     * @returns Promise<string | undefined>
+     * This method can be used to delete the resturant in the database
+     */
     async deleteRestaurant(restaurantEmail: string): Promise<string | undefined> {
         try {
             const deleteResult: { acknowledged: boolean, deletedCount: number } = await restaurant.deleteOne({ "email": restaurantEmail })
             if (deleteResult && deleteResult.acknowledged && deleteResult.deletedCount === 1) {
-                return `Restaurant deleted successfully`
+                return MESSAGES.RESTAURANT_DELETED_SUCCESS
             } else if (deleteResult && deleteResult.acknowledged) {
-                return `Restaurant already deleted`
+                return MESSAGES.RESTAURANT_ALREADY_DELETED
             }
         } catch (error) {
             throw error;
@@ -58,6 +70,13 @@ export class RestaurantService {
             throw error;
         }
     }
+    /**
+     * 
+     * @param request 
+     * @param response 
+     * @returns 
+     * This mehtod can be used to get all the restaurants registered in the database
+     */
     async getRestaurants(request: any, response: any) {
         try {
             const restaurants = await restaurant.find()
@@ -75,6 +94,13 @@ export class RestaurantService {
         }
 
     }
+    /**
+     * 
+     * @param name 
+     * @param email 
+     * @returns Promise<restaurantInterface>
+     * This method can be used to find a restaurant in database based on restaurant email
+     */
     async findRestaurant(name: string | undefined, email?: string): Promise<restaurantInterface> {
         if (email) {
             return await restaurant.findOne({ email: email })
@@ -83,14 +109,21 @@ export class RestaurantService {
         }
 
     }
-    async addRestaurant(request: any, response: any) {
+    /**
+     * 
+     * @param request 
+     * @param response 
+     * @returns Promise<string|undefined>
+     * This method is used to register the restaurant information into the database
+     */
+    async addRestaurant(request: any, response: any):Promise<string|undefined> {
         try {
 
             const inputParams: restaurantInterface = request.body
             const { name, ownerName, foodType, pincode, address, phone, email, password, food } = inputParams;
             const checkExisting: restaurantInterface = await this.findRestaurant(undefined, email);
             if (checkExisting) {
-                throw new Error("Restaurant already exists");
+                throw new Error(MESSAGES.RESTAUTANT_ALREADY_EXIST);
             }
             const salt = await passwordUtility.generateSalt();
             const encryptedpassword = await passwordUtility.createEncryptedPassword(password, salt);
@@ -112,30 +145,34 @@ export class RestaurantService {
             })
             const insertResult = await newRestaurant.save();
             if (insertResult) {
-                return {
-                    success: true,
-                    message: `Data inserted successfuly`
-                }
+                return MESSAGES.RESTAURANT_ADDED_SUCCESS
             }
         } catch (error) {
             throw error;
         }
 
     }
+    /**
+     * This method updates the menu of a givem restaurant.
+     */
     async updateMenu(restaurantEmail: string, food: any): Promise<string> {
         try {
-            const filter = restaurantEmail;
             const update = { food: food }
             const doc = await restaurant.updateOne({email:restaurantEmail}, update);
             if (doc) {
-                return `The menu has been updated successfully`
+                return MESSAGES.RESTAUARANT_MENU_UPDATE_SUCCESS
             } else {
-                return `The menu could not be updated please try again`
+                return MESSAGES.RESTAUARANT_MENU_UPDATE_FAILED
             }
         } catch (error) {
             throw error;
         }
     }
+    /**
+     * 
+     * @returns Promise<{ retaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null>
+     * This method fetches all the resturant names and their corresponding menus
+     */
     async getRestaurantsAndMenu(): Promise<{ retaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null> {
         try {
 
@@ -146,7 +183,6 @@ export class RestaurantService {
                 for (let index = 0; index < restaurants.length; index++) {
                     retaurantsAndFoodOptions!.push({ retaurantName: restaurants[index].name, food: restaurants[index].food })
                 }
-                console.log(JSON.stringify(retaurantsAndFoodOptions))
                 return retaurantsAndFoodOptions
             } else {
                 return null;
@@ -156,13 +192,20 @@ export class RestaurantService {
         }
 
     }
+    /**
+     * 
+     * @param orderDetials 
+     * @param customerEmail 
+     * @returns Promise<string>
+     * Creates an active order in restaurant's database collection and corresponding customers collection who placed the order
+     */
     async createOrder(orderDetials: createOrderInterface, customerEmail: string): Promise<string> {
         try {
             const availableItems: string[] = [];
             const unavailableItems: string[] = [];
             const restaurantDetails: restaurantInterface = await restaurant.findOne({ 'name': orderDetials.restaurantName });
             if (restaurantDetails == null) {
-                throw new Error(`the Resturant ${orderDetials.restaurantName} does not exist`)
+                throw new Error(`${orderDetials.restaurantName} does not exist`)
             }
             for (let i = 0; i < orderDetials.items.length; i++) {
                 for (let j = 0; j < restaurantDetails.food.length; j++) {
@@ -175,7 +218,7 @@ export class RestaurantService {
             }
             if (unavailableItems.length || restaurantDetails.food.length ===0 ) {
                 console.log(unavailableItems)
-                throw new Error(`Some items are not available. Please remove the items and try again`)
+                throw new Error(MESSAGES.ITEMS_NOT_AVAILABLE)
             } else {
                 //update the restaurants active orders.
                 let orderNumber: string = '';
@@ -214,7 +257,7 @@ export class RestaurantService {
                 const customerDetails: customerInterface = await customer.findOne({ email: customerEmail });
                 let customerActiveOrders: any = [];
                 if (customerDetails.activeOrders.length > 0) {
-                    const customerActiveOrders = customerDetails.activeOrders;
+                    customerActiveOrders = customerDetails.activeOrders;
                     customerActiveOrders.push({
                         orderNumber,
                         items: orderedItems,
@@ -227,22 +270,24 @@ export class RestaurantService {
                         restaurantName: restaurantDetails.name
                     }
                 }
-                const customerFilter = customerEmail;
                 const updateCustomerOrders = { activeOrders: customerActiveOrders }
-                const customerDoc = await customer.updateOne({email:customerEmail}, updateCustomerOrders, {
-                    new: true
-                });
-                console.log(customerDoc)
+                const customerDoc = await customer.updateOne({email:customerEmail}, updateCustomerOrders);
                 if (doc && customerDoc) {
-                    return `The Order has been placed Successfully`
+                    return MESSAGES.ORDER_PLACED_SUCCESSFULY
                 } else {
-                    return `The order could not be placed please try again`
+                    return MESSAGES.ORDER_PLACED_FAILED
                 }
             }
         } catch (error) {
             throw error;
         }
     }
+    /**
+     * 
+     * @param restaurantEmail 
+     * @returns Promise<restaurantActiveOrders>
+     * Fetches the active orders of a restaurant
+     */
     async getRestaurantActiveOrders(restaurantEmail:string):Promise<restaurantActiveOrders>{
         try {
             return await restaurant.find({email:restaurantEmail},{activeOrders:1});

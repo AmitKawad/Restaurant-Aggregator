@@ -4,6 +4,7 @@ import { customer } from "../models";
 import { ROLES } from "../utility/constants";
 import { Password as PasswordUtility } from "../utility/Password";
 const passwordUtility = new PasswordUtility();
+import {MESSAGES} from './../utility/constants'
 
 
 export class CustomerService {
@@ -50,5 +51,21 @@ export class CustomerService {
           } catch (error) {
                throw error;
           }
+     }
+     async deleteCustomer(customerEmail:string):Promise<string | undefined>{
+          try {
+               console.log(customerEmail)
+               const deleteResult =  await customer.deleteOne({ email: customerEmail });
+               console.log(deleteResult)
+               if (deleteResult && deleteResult.acknowledged && deleteResult.deletedCount === 1) {
+                    return MESSAGES.CUSTOMER_DELETED_SUCCESS
+                }else if (deleteResult && deleteResult.acknowledged) {
+                    return MESSAGES.CUSTOMER_ALREADY_DELETED
+                }
+
+          } catch (error) {
+               throw error;
+          }
+
      }
 }

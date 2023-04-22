@@ -31,8 +31,8 @@ const signup = async function (request, response) {
     }
 
 }
-const login = async function(request,response){
-    try{
+const login = async function (request, response) {
+    try {
         const customer: customerInterface = await customerService.findCustomer(request.query.email)
         if (customer == null) {
             response.json({ message: 'Customer with the provided email does not exist' });
@@ -66,27 +66,26 @@ const login = async function(request,response){
 
 // }
 
-const getRestaurantMenu = async function (request, response) {
-    const restaurantAndFoodOptions = await restaurantService.getRestaurantsAndMenu();
-    
-    response.json({ success: true, data: restaurantAndFoodOptions })
-}
-const createOrder = async function (request, response) {
-try{
-    const orderDetails:createOrderInterface = request.body;
-    const createOrderResponse = await restaurantService.createOrder(orderDetails,request.user.email);
-    
-    response.json({ success: true, data: createOrderResponse })
-}catch(error:any){
-    response.json({
-        success: false,
-        error: error.message
-    })
 
-}
-}
-router.post('', signup)
-router.post('/login', login)
-//router.post('/createOrder',createOrder)
-router.get('/restaurants',getRestaurantMenu)
-router.post('/createOrder',passwordUtility.authenticateToken,createOrder)
+    const deleteCustomer = async function (request, response) {
+        try {
+            if (request.user.role !== ROLES.ADMIN) {
+                return response.sendStatus(403);
+            } else {
+                const deleteRsult = await customerService.deleteCustomer(request.params.email);
+                response.json({ success: true, message: deleteRsult })
+            }
+
+
+        } catch (error: any) {
+            response.json({
+                success: false,
+                error: error.message
+            })
+
+        }
+    }
+    router.post('', signup)
+    router.post('/login', login)
+ 
+    router.delete('/:email', passwordUtility.authenticateToken, deleteCustomer)

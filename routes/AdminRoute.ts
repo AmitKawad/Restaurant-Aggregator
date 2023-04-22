@@ -12,21 +12,7 @@ router.get('/', (request, response) => {
     response.json({ message: `Hello from admin route` });
 })
 
-const getRestaurants = async function (request: any, response: any) {
-    try {
-        if (request.user.role === ROLES.ADMIN) {
 
-            const APIresponse = await restaurantService.getRestaurants(request, response);
-            response.json(APIresponse);
-        }
-
-    } catch (error: any) {
-        response.json({
-            success: false,
-            error: error.message
-        })
-    }
-}
 const getRestaurantByEmail = async function (request: any, response: any) {
     try {
         if(request.user.role === ROLES.ADMIN){
@@ -69,7 +55,6 @@ const login = async function (request: any, response: any) {
 
 
 
-router.get('/restaurants', passwordUtility.authenticateToken, getRestaurants);
 router.get('/restaurant/:email',passwordUtility.authenticateToken, getRestaurantByEmail);
 router.post('/login', login);
 
