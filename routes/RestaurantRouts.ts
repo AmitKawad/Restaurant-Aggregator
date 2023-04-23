@@ -308,6 +308,27 @@ const getRestaurants = async function (request: any, response: any) {
         })
     }
 }
+/**
+ * 
+ * @param request 
+ * @param response
+ * This API is for restaurant to mark the order delivered. 
+ */
+const deliverOrder = async function (request: any, response: any) {
+    try {
+        if (request.user.role !== ROLES.RESTAURANT) {
+            response.send(403);
+        }
+        const deliverOrderResult = await restaurantService.deliverOrder(request.user.email, request.params.orderNumber);
+        response.json({ success: true, message: deliverOrderResult })
+    } catch (error: any) {
+        response.json({
+            success: false,
+            message: error.message
+        })
+    }
+
+}
 
 
 router.post('/login/:email/:password', login);
@@ -321,6 +342,7 @@ router.get('/getActiveOrders',passwordUtility.authenticateToken,getActiveOrders)
 router.get('/menu',passwordUtility.authenticateToken, getRestaurantMenu)
 router.post('/createOrder', passwordUtility.authenticateToken, createOrder)
 router.get('/allRestaurants', passwordUtility.authenticateToken, getRestaurants);
+router.post('/deliverOrder/:orderNumber',passwordUtility.authenticateToken,deliverOrder);
 
 
 

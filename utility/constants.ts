@@ -30,7 +30,10 @@ const MESSAGES = {
     CUSTOMER_ALREADY_EXISTS:`Customer already exists`,
     CUSTOMER_DATA_INSERTED_SUCCESS:`Data inserted successfully`,
     CUSTOMER_DELETED_SUCCESS:`Customer deleted successfully`,
-    CUSTOMER_ALREADY_DELETED:`Customer already deleted`
+    CUSTOMER_ALREADY_DELETED:`Customer already deleted`,
+    ORDER_DELIVERED_SUCCESS:'Ordered Delivered',
+    ORDER_ALREADY_DELIVERED:'Order already delivered or does not exist',
+    ORDER_DOES_NOT_EXIST:'The provided order number does not exist'
 
 }
 export {appConstants,ROLES, MESSAGES};

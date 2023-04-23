@@ -2,7 +2,7 @@ import { customerInterface } from './../dto/Customer.dto';
 import { restaurant } from '../models/Restaurant';
 import { MESSAGES, ROLES } from '../utility/constants';
 import { Password } from '../utility/Password';
-import { restaurantInterface, restaurantUpdateInterface, restaurantActiveOrders } from './../dto/Restaurant.dto.';
+import { restaurantInterface, restaurantUpdateInterface, restaurantActiveOrders, restaurantDeliveredOrders } from './../dto/Restaurant.dto.';
 import { createOrderInterface } from '../dto';
 import { customer } from '../models';
 const passwordUtility = new Password();
@@ -116,7 +116,7 @@ export class RestaurantService {
      * @returns Promise<string|undefined>
      * This method is used to register the restaurant information into the database
      */
-    async addRestaurant(request: any, response: any):Promise<string|undefined> {
+    async addRestaurant(request: any, response: any): Promise<string | undefined> {
         try {
 
             const inputParams: restaurantInterface = request.body
@@ -158,7 +158,7 @@ export class RestaurantService {
     async updateMenu(restaurantEmail: string, food: any): Promise<string> {
         try {
             const update = { food: food }
-            const doc = await restaurant.updateOne({email:restaurantEmail}, update);
+            const doc = await restaurant.updateOne({ email: restaurantEmail }, update);
             if (doc) {
                 return MESSAGES.RESTAUARANT_MENU_UPDATE_SUCCESS
             } else {
@@ -216,21 +216,30 @@ export class RestaurantService {
                     }
                 }
             }
-            if (unavailableItems.length || restaurantDetails.food.length ===0 ) {
-                console.log(unavailableItems)
+            if (unavailableItems.length || restaurantDetails.food.length === 0) {
                 throw new Error(MESSAGES.ITEMS_NOT_AVAILABLE)
             } else {
                 //update the restaurants active orders.
                 let orderNumber: string = '';
-                if (restaurantDetails.activeOrders.length > 0) {
+                if (restaurantDetails.activeOrders.length > 0 || restaurantDetails.deliveredOrders.length > 0) {
                     const orderNumberArray: string[] = restaurantDetails.activeOrders[restaurantDetails.activeOrders.length - 1].orderNumber.split('-');
-                    const numberSuffix = parseInt(orderNumberArray[1]) + 1;
+                    let numberSuffixActive = 0;
+                    let numberSuffixDelivered = 0;
+                    let numberSuffix = 0;
+                    if (orderNumberArray.length !== 0) {
+                        numberSuffixActive = parseInt(orderNumberArray[1]) + 1;
+                    }
+                    if (restaurantDetails.deliveredOrders.length > 0) {
+                        const deliveredOrderNumberArray: string[] = restaurantDetails.deliveredOrders[restaurantDetails.deliveredOrders.length - 1].orderNumber.split('-');
+                        numberSuffixDelivered = parseInt(deliveredOrderNumberArray[1]) + 1;
+                    }
+                    if (numberSuffixActive > numberSuffixDelivered) {
+                        numberSuffix = numberSuffixActive;
+                    } else {
+                        numberSuffix = numberSuffixDelivered;
+                    }
                     orderNumber = orderNumberArray[0] + '-' + numberSuffix;
 
-                } else if (restaurantDetails.deliveredOrders.length > 0) {
-                    const orderNumberArray: string[] = restaurantDetails.deliveredOrders[restaurantDetails.deliveredOrders.length - 1].orderNumber.split('-');
-                    const numberSuffix = parseInt(orderNumberArray[1]) + 1;
-                    orderNumber = orderNumberArray[0] + '-' + numberSuffix;
                 } else {
                     orderNumber = 'ORD-10001';
                 }
@@ -252,7 +261,7 @@ export class RestaurantService {
                 }
                 const filter = restaurantDetails.email;
                 const update = { activeOrders: restaurantActiveOrders }
-                const doc = await restaurant.updateOne({email:restaurantDetails.email}, update);
+                const doc = await restaurant.updateOne({ email: restaurantDetails.email }, update);
                 //update the customers active orders.
                 const customerDetails: customerInterface = await customer.findOne({ email: customerEmail });
                 let customerActiveOrders: any = [];
@@ -271,7 +280,7 @@ export class RestaurantService {
                     }
                 }
                 const updateCustomerOrders = { activeOrders: customerActiveOrders }
-                const customerDoc = await customer.updateOne({email:customerEmail}, updateCustomerOrders);
+                const customerDoc = await customer.updateOne({ email: customerEmail }, updateCustomerOrders);
                 if (doc && customerDoc) {
                     return MESSAGES.ORDER_PLACED_SUCCESSFULY
                 } else {
@@ -288,9 +297,53 @@ export class RestaurantService {
      * @returns Promise<restaurantActiveOrders>
      * Fetches the active orders of a restaurant
      */
-    async getRestaurantActiveOrders(restaurantEmail:string):Promise<restaurantActiveOrders>{
+    async getRestaurantActiveOrders(restaurantEmail: string): Promise<restaurantActiveOrders> {
         try {
-            return await restaurant.find({email:restaurantEmail},{activeOrders:1});
+            return await restaurant.find({ email: restaurantEmail }, { activeOrders: 1 });
+        } catch (error) {
+            throw error;
+        }
+
+    }
+    /**
+     * 
+     * @param restaurantEmail 
+     * @param orderNumber 
+     * @returns Promise<string>
+     * This method marks transfers the active order to the delivered order in restaurant and customer collection
+     */
+    async deliverOrder(restaurantEmail: string, orderNumber: string): Promise<string> {
+        try {
+            const activeOrderDetails: restaurantInterface = await restaurant.findOne({ email: restaurantEmail }, { activeOrders: { $elemMatch: { orderNumber: orderNumber } } });
+            if(activeOrderDetails==null){
+                return MESSAGES.ORDER_DOES_NOT_EXIST;
+            }
+            // const activeOrders:restaurantActiveOrders = activeOrderDetails
+            const update = await restaurant.update({ email: restaurantEmail }, { $pull: { activeOrders: { orderNumber: orderNumber } } })
+            // const deliveredOrderDetails = await restaurant
+            // const update = await restaurant.update({email:restaurantEmail},{$pull:{activeOrders:{orderNumber:orderNumber}}})
+            const restaurantDetails: restaurantInterface = await restaurant.findOne({ email: restaurantEmail })
+            const deliveredOrders = restaurantDetails.deliveredOrders;
+            deliveredOrders.push({
+                orderNumber: activeOrderDetails.activeOrders[0].orderNumber,
+                items: activeOrderDetails.activeOrders[0].items,
+                customerEmail: activeOrderDetails.activeOrders[0].customerEmail
+            })
+            const updateDeliveredOrders = await restaurant.updateOne({ email: restaurantEmail }, { deliveredOrders: deliveredOrders })
+
+            const customerDetails: customerInterface = await customer.findOne({ email: activeOrderDetails.activeOrders[0].customerEmail })
+            const customerDeliveredOrders = customerDetails.deliveredOrders;
+            customerDeliveredOrders.push({
+                orderNumber: activeOrderDetails.activeOrders[0].orderNumber,
+                items: activeOrderDetails.activeOrders[0].items,
+                restaurantName: restaurantDetails.name
+            })
+            const updateCustomerDeliveredOrders = await customer.updateOne({ email: activeOrderDetails.activeOrders[0].customerEmail }, { deliveredOrders: customerDeliveredOrders })
+            if (updateDeliveredOrders && updateCustomerDeliveredOrders) {
+                return MESSAGES.ORDER_DELIVERED_SUCCESS
+            } else {
+                return MESSAGES.ORDER_ALREADY_DELIVERED
+            }
         } catch (error) {
             throw error;
         }
