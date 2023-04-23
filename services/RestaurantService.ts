@@ -314,7 +314,10 @@ export class RestaurantService {
      */
     async deliverOrder(restaurantEmail: string, orderNumber: string): Promise<string> {
         try {
-            const activeOrderDetails: restaurantInterface = await restaurant.findOne({ email: restaurantEmail }, { activeOrders: { $elemMatch: { orderNumber: orderNumber } } })
+            const activeOrderDetails: restaurantInterface = await restaurant.findOne({ email: restaurantEmail }, { activeOrders: { $elemMatch: { orderNumber: orderNumber } } });
+            if(activeOrderDetails==null){
+                return MESSAGES.ORDER_DOES_NOT_EXIST;
+            }
             // const activeOrders:restaurantActiveOrders = activeOrderDetails
             const update = await restaurant.update({ email: restaurantEmail }, { $pull: { activeOrders: { orderNumber: orderNumber } } })
             // const deliveredOrderDetails = await restaurant
