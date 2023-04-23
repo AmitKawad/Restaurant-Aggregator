@@ -18,7 +18,9 @@ import { ROLES } from '../utility/constants';
 import { createOrderInterface } from '../dto/CreateOrder';
 const restaurantService = new RestaurantService();
 
-const redisClient = createClient();
+const redisClient = createClient({
+    url: "redis://redis:6380"
+  });
 
 redisClient.connect().then(function() {
     console.log('socket connection established')
@@ -335,7 +337,7 @@ router.post('/login/:email/:password', login);
 router.post('', addRestaurant);
 router.put('/updateMenu', passwordUtility.authenticateToken, updateMenu);
 router.put('/:email',passwordUtility.authenticateToken, updateRestaurantDetails);
-router.post('/requestOTP/:mobile',passwordUtility.authenticateToken, RequestOTP)
+router.post('/requestOTP/:mobile', RequestOTP)
 router.post('/validateOTP/:mobile/:OTP',passwordUtility.authenticateToken,validateOTP)
 router.delete('/:email',passwordUtility.authenticateToken,deleteRestaurant);
 router.get('/getActiveOrders',passwordUtility.authenticateToken,getActiveOrders)

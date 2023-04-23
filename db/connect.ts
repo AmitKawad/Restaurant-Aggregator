@@ -3,7 +3,7 @@ import config from 'config';
 
 const connect = async function (): Promise<void>  {
     try {
-        const dbURI = 'mongodb://localhost:27017/restaurant-aggregator'
+        const dbURI = 'mongodb://root:root@mongo-db:27018/?authSource=admin'
         const connectResult = await mongoose.connect(dbURI);
         if(connectResult){
             console.log('Connected successfuly to the database')
