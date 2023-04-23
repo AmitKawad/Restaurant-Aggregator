@@ -308,6 +308,10 @@ const getRestaurants = async function (request: any, response: any) {
         })
     }
 }
+const deliverOrder = async function(request:any, response:any){
+    await restaurantService.deliverOrder(request.user.email,request.params.orderNumber);
+
+}
 
 
 router.post('/login/:email/:password', login);
@@ -321,6 +325,7 @@ router.get('/getActiveOrders',passwordUtility.authenticateToken,getActiveOrders)
 router.get('/menu',passwordUtility.authenticateToken, getRestaurantMenu)
 router.post('/createOrder', passwordUtility.authenticateToken, createOrder)
 router.get('/allRestaurants', passwordUtility.authenticateToken, getRestaurants);
+router.post('/deliverOrder/:orderNumber',passwordUtility.authenticateToken,deliverOrder);
 
 
 

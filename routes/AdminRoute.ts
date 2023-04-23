@@ -29,7 +29,6 @@ const getRestaurantByEmail = async function (request: any, response: any) {
 const login = async function (request: any, response: any) {
     try {
         const adminService = new AdminService();
-        console.log(request.query.userName)
         const admin = await adminService.findAdmin(request.query.userName)
         if (admin == null) {
             response.json({ message: 'Admin with the provided name does not exist' });
