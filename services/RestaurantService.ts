@@ -350,4 +350,23 @@ export class RestaurantService {
 
     }
 
+    /**
+     * 
+     * @param restaurantEmail 
+     * @returns Promise<restaurantDeliveredOrders[]>
+     * Fetch deliveredOrders for a logged in restaurant.
+     */
+    async getDeliveredOrders(restaurantEmail: string): Promise<restaurantDeliveredOrders[]> {
+        try {
+            const deliveredOrders: restaurantDeliveredOrders[] = await restaurant.find({ email: restaurantEmail }, { deliveredOrders: 1 });
+            if (deliveredOrders.length > 0) {
+                return deliveredOrders;
+            } else {
+                return [];
+            }
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 }

@@ -329,20 +329,48 @@ const deliverOrder = async function (request: any, response: any) {
     }
 
 }
+/**
+ * 
+ * @param request 
+ * @param response 
+ * This API returns the orders delivered by the logged in restaurant.
+ */
+const getDeliveredOrders = async function(request:any,response:any){
+    try {
+        if (request.user.role !== ROLES.RESTAURANT) {
+            response.sendStatus(403);
+        } else {
+        const deliveredOrders = await restaurantService.getDeliveredOrders(request.user.email)
+        return response.json({
+            success:true,
+            data:deliveredOrders
+        })
+
+        }
+        
+    } catch (error:any) {
+        response.json({
+            success:false,
+            error:error.message
+        })
+        
+    }
+}
 
 
 router.post('/login/:email/:password', login);
 router.post('', addRestaurant);
 router.put('/updateMenu', passwordUtility.authenticateToken, updateMenu);
 router.put('/:email',passwordUtility.authenticateToken, updateRestaurantDetails);
-router.post('/requestOTP/:mobile',passwordUtility.authenticateToken, RequestOTP)
-router.post('/validateOTP/:mobile/:OTP',passwordUtility.authenticateToken,validateOTP)
+router.post('/requestOTP/:mobile', RequestOTP)
+router.post('/validateOTP/:mobile/:OTP',validateOTP)
 router.delete('/:email',passwordUtility.authenticateToken,deleteRestaurant);
 router.get('/getActiveOrders',passwordUtility.authenticateToken,getActiveOrders)
 router.get('/menu',passwordUtility.authenticateToken, getRestaurantMenu)
 router.post('/createOrder', passwordUtility.authenticateToken, createOrder)
 router.get('/allRestaurants', passwordUtility.authenticateToken, getRestaurants);
 router.post('/deliverOrder/:orderNumber',passwordUtility.authenticateToken,deliverOrder);
+router.get('/getDeliveredOrders',passwordUtility.authenticateToken,getDeliveredOrders);
 
 
 

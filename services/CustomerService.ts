@@ -54,9 +54,7 @@ export class CustomerService {
      }
      async deleteCustomer(customerEmail:string):Promise<string | undefined>{
           try {
-               console.log(customerEmail)
                const deleteResult =  await customer.deleteOne({ email: customerEmail });
-               console.log(deleteResult)
                if (deleteResult && deleteResult.acknowledged && deleteResult.deletedCount === 1) {
                     return MESSAGES.CUSTOMER_DELETED_SUCCESS
                 }else if (deleteResult && deleteResult.acknowledged) {
