@@ -16,7 +16,7 @@ This repository contains the source code of a restaurant aggregator application.
   * Admin
   * Restaurant. 
   * Customers.
-* The application exposes a set of APIs including signup and login for multiple restaurants and customers. Once registered the customers can view the all the restaurants registered and their menus. Customers can place orders with any restaurant for the available food in thier menus. The resturants and customers can individually track their active and delivered orders. All The APIs are securred by the user role using the jwt auth tokens.
+* The application exposes a set of APIs including signup and login for multiple restaurants and customers. On completing registration the customers can view the all the restaurants registered and their menus. Customers can place orders with any restaurant for the available food in thier menus. The resturants and customers can individually track their active and delivered orders. All The APIs are securred by the user role using the jwt auth tokens.
 
 ## Environment Variables
 
