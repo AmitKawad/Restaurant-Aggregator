@@ -66,26 +66,78 @@ const login = async function (request, response) {
 
 // }
 
-
-    const deleteCustomer = async function (request, response) {
-        try {
-            if (request.user.role !== ROLES.ADMIN) {
-                return response.sendStatus(403);
-            } else {
-                const deleteRsult = await customerService.deleteCustomer(request.params.email);
-                response.json({ success: true, message: deleteRsult })
-            }
-
-
-        } catch (error: any) {
-            response.json({
-                success: false,
-                error: error.message
+/**
+ * 
+ * @param request 
+ * @param response 
+ * API to fetch active Orders for customer
+ */
+const activeOrders = async function (request: any, response: any) {
+    try {
+        if (request.user.role !== ROLES.CUSTOMER) {
+            response.send(403);
+        } else {
+            const activeOrders = await customerService.getActiveOrders(request.user.email);
+            return response.json({
+                success: true,
+                data: activeOrders
             })
-
         }
+    } catch (error: any) {
+        return ({
+            success: false,
+            message: error.message
+        })
     }
-    router.post('', signup)
-    router.post('/login', login)
- 
-    router.delete('/:email', passwordUtility.authenticateToken, deleteCustomer)
+
+}
+/**
+ * 
+ * @param request 
+ * @param response 
+ * API to fetch delivered Orders for customer
+ */
+const deliveredOrders = async function (request: any, response: any) {
+    try {
+        if (request.user.role !== ROLES.CUSTOMER) {
+            response.send(403);
+        } else {
+            const deliveredOrders = await customerService.getDeliveredOrders(request.user.email);
+            return response.json({
+                success: true,
+                data: deliveredOrders
+            })
+        }
+    } catch (error: any) {
+        return ({
+            success: false,
+            message: error.message
+        })
+    }
+
+}
+
+
+const deleteCustomer = async function (request, response) {
+    try {
+        if (request.user.role !== ROLES.ADMIN) {
+            return response.sendStatus(403);
+        } else {
+            const deleteRsult = await customerService.deleteCustomer(request.params.email);
+            response.json({ success: true, message: deleteRsult })
+        }
+
+
+    } catch (error: any) {
+        response.json({
+            success: false,
+            error: error.message
+        })
+
+    }
+}
+router.post('', signup)
+router.post('/login', login)
+router.get('/activeOrders', passwordUtility.authenticateToken, activeOrders)
+router.get('/deliveredOrders', passwordUtility.authenticateToken, deliveredOrders)
+router.delete('/:email', passwordUtility.authenticateToken, deleteCustomer)
