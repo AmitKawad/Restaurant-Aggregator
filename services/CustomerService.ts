@@ -1,5 +1,5 @@
 import { restaurantInterface } from "../dto";
-import { customerInterface } from "../dto/Customer.dto";
+import { customerActiveOrders, customerInterface } from "../dto/Customer.dto";
 import { customer } from "../models";
 import { ROLES } from "../utility/constants";
 import { Password as PasswordUtility } from "../utility/Password";
@@ -65,5 +65,45 @@ export class CustomerService {
                throw error;
           }
 
+     }
+     /**
+      * 
+      * @param customerEmail 
+      * @returns Promise<customerActiveOrders| []
+      * Method to fetch active orders for the customers
+      */
+     async getActiveOrders (customerEmail:string):Promise<any>{
+          try {
+               const activeOrders:customerActiveOrders = await customer.find({email:customerEmail},{activeOrders:1})
+               if(activeOrders){
+                    return activeOrders;
+               }else{
+                    return [];
+               }
+               
+          } catch (error) {
+               throw error;
+               
+          }
+     }
+     /**
+      * 
+      * @param customerEmail 
+      * @returns Promise<customerActiveOrders| []
+      * Method to fetch delivered orders for the customers
+      */
+     async getDeliveredOrders(customerEmail: string): Promise<customerActiveOrders | []>{
+          try {
+               const deliveredOrders:customerActiveOrders = await customer.find({email:customerEmail},{deliveredOrders:1})
+               if(deliveredOrders){
+                    return deliveredOrders;
+               }else{
+                    return [];
+               }
+               
+          } catch (error) {
+               throw error;
+               
+          }
      }
 }
