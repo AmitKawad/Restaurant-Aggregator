@@ -170,20 +170,20 @@ export class RestaurantService {
     }
     /**
      * 
-     * @returns Promise<{ retaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null>
+     * @returns Promise<{ restaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null>
      * This method fetches all the resturant names and their corresponding menus
      */
-    async getRestaurantsAndMenu(): Promise<{ retaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null> {
+    async getRestaurantsAndMenu(): Promise<{ restaurantName: string, food: { foodType: string, dishes: string[] }[] }[] | null> {
         try {
 
             const restaurants: restaurantInterface[] = await restaurant.find({}, { _id: 0 })
-            const retaurantsAndFoodOptions: { retaurantName: string, food: { foodType: string, dishes: string[] }[] }[] = [];
+            const restaurantsAndFoodOptions: { restaurantName: string, food: { foodType: string, dishes: string[] }[] }[] = [];
 
             if (restaurants !== null) {
                 for (let index = 0; index < restaurants.length; index++) {
-                    retaurantsAndFoodOptions!.push({ retaurantName: restaurants[index].name, food: restaurants[index].food })
+                    restaurantsAndFoodOptions!.push({ restaurantName: restaurants[index].name, food: restaurants[index].food })
                 }
-                return retaurantsAndFoodOptions
+                return restaurantsAndFoodOptions
             } else {
                 return null;
             }
