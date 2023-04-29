@@ -8,6 +8,12 @@ import {MESSAGES} from './../utility/constants'
 
 
 export class CustomerService {
+     /**
+      * 
+      * @param customerDetails 
+      * @returns 
+      * Signup the customer into a seperate customer collection and store the required information
+      */
      async sigupHelper(customerDetails: customerInterface) {
           try {
 
@@ -44,6 +50,12 @@ export class CustomerService {
           }
 
      }
+     /**
+      * 
+      * @param customerEmail 
+      * @returns 
+      * Find the customer based on email in customer collection
+      */
      async findCustomer(customerEmail: string): Promise<customerInterface> {
           try {
                return await customer.findOne({ 'email': customerEmail });
@@ -52,6 +64,12 @@ export class CustomerService {
                throw error;
           }
      }
+     /**
+      * 
+      * @param customerEmail 
+      * @returns 
+      * Finds the customer with email id in customer collecction and delete
+      */
      async deleteCustomer(customerEmail:string):Promise<string | undefined>{
           try {
                const deleteResult =  await customer.deleteOne({ email: customerEmail });
