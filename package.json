@@ -1,5 +1,5 @@
 {
-  "name": "microservices",
+  "name": "restaurant-aggregator",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmitKawad/Microservices.git"
+    "url": "git+https://github.com/AmitKawad/Restaurant-Aggregator.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AmitKawad/Microservices/issues"
+    "url": "https://github.com/AmitKawad/Restaurant-Aggregator/issues"
   },
-  "homepage": "https://github.com/AmitKawad/Microservices#readme",
+  "homepage": "https://github.com/AmitKawad/Restaurant-Aggregator#readme",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/config": "0.0.41",

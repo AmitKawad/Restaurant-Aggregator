@@ -1,5 +1,7 @@
 import { createClient } from 'redis';
-const redisClient = createClient();
+const redisClient = createClient({
+    url: "redis://redis:6380"
+  });
 
 redisClient.connect().then(function() {
     console.log('socket connection established')

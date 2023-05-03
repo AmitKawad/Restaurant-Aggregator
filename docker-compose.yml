@@ -1,15 +1,29 @@
 version: '3'
 services:
-  app:
-    container_name: docker-node-mongo
+  node-app:
+    container_name: RESTAURANT_AGGREGATOR
     restart: always
     build: .
     ports:
       - '3001:3001'
-    external_links:
-      - mongo
-  mongo:
-    container_name: mongo
+    env_file:
+      - ./.env
+    depends_on:
+      - mongo-db
+  mongo-db:
     image: mongo
+    command: mongod --port 27018
     ports:
-      - '27017:27017'
+        - '27018:27018'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      restart: always
+    volumes:
+      - mongodb-vol:/data/db
+  redis:
+    image: redis
+    command: --port 6380
+
+volumes:
+  mongodb-vol:
